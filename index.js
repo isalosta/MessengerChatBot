@@ -78,6 +78,7 @@ app.post("/webhook", (req, res) => {
 });
 
 function ProcessMessage(step, body, dt) {
+    console.log(step);
     switch(step) {
         case 0:
             UserModel.update({ user_id: body.from.id }, {
