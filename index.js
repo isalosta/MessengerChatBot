@@ -1,4 +1,6 @@
 
+
+
 const Express = require('express');
 const BodyParser = require('body-parser');
 const Mongoose = require('mongoose');
@@ -20,8 +22,17 @@ Mongoose.connect(encodeURI(process.env.MONGO_URI)).then(res => {
 app.use(BodyParser.json());
 
 app.post("/webhook", (req, res) => {
-    console.log(req);
-    res.send({status: "OK"});
+    res.status(200).send("EVENT RECIEVED");
+
+    let body = req.body;
+
+    if(body.object === 'page') {
+        if(body.entry.length <= 0) {
+            return;
+        }
+    }
+
+
 });
 
 app.get("/webhook", (req, res) => {
@@ -52,6 +63,10 @@ app.get("/messages/:id", async(req, res, next) => {
 
 app.get("/messages/delete/:id", async(req, res, next) => {
     console.log(req, res);
+});
+
+app.get("/privacy_policy", (req, res) => {
+    res.sendFile('views/privacy_policy.html', {root: __dirname })
 })
 
 app.listen(process.env.PORT || 8080, () => {console.log(`Server RUN on ${process.env.PORT}`)});
