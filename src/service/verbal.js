@@ -5,6 +5,9 @@ let Question = {
     },
     "1" : {
         "text": "Please tell me when is you were born ?"
+    }, 
+    "2" : {
+        "text": "Do you want to know About your day of your birthday ?"
     }
 }
 
@@ -19,7 +22,5 @@ let EndResponse = (date = "") => {
     }
 }
 
-exports = {
-    Question,
-    EndResponse
-}
+exports.Question = Question;
+exports.EndResponse = EndResponse;

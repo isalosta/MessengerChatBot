@@ -9,6 +9,8 @@ const Request = require('request');
 const Multer = require('multer');
 
 const UserModel = require('./src/database/model_user');
+const Verbal = require('./src/service/verbal');
+const PostBack = require('./src/service/postback');
 
 DotEnv.config({path: `${__dirname}/.env`});
 
@@ -36,6 +38,22 @@ app.post("/webhook", (req, res) => {
     if(type === "message") {
         UserModel.find({user_id: body.from.id}).then(res => {
             console.log("DB >>> ", res);
+            if(res.length > 0) {
+                let dt = res[0];
+                if(parseInt(dt.step) < 3) {
+                    PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.Question[dt.step].text).then(res => {
+                        console.log("SENT! >>> ", res);
+                    }).catch(err => {console.log("SENDING FAIL!")});
+                } else {
+                    PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.EndResponse("XXX")[body.message.text.indexOf("y") > 1 ? "y" : "n"].text).then(res => {
+                        console.log("SENT! >>> ", res);
+                    }).catch(err => {console.log("SENDING FAIL!")});
+                }
+            } else {
+                PostBack(process.env.ACCESS_TOKEN, body.from.id, "Hello There!").then(res => {
+                    console.log("SENT! >>> ", res);
+                }).catch(err => {console.log("SENDING FAIL!")});
+            }
         }).catch(err => {
             console.log(err);
         })
