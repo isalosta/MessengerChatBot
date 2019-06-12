@@ -50,7 +50,7 @@ app.post("/webhook", (req, res) => {
                         user_name: body.from.name,
                         step: "0",
                         is_not_first: false,
-                        birthday: new Date.now()
+                        birthday: Moment().format("DD/MM/YYYY")
                     }).then(res => {
                         PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.Question["0"].text).then(res => {
                             console.log("SENT! >>> ", body.from.id);
@@ -118,7 +118,7 @@ function ProcessMessage(step, body, dt) {
                 is_not_first: true,
                 birthday: dt.birthday
             }).then(res_ => {
-                let date_now = Moment(new Date.now());
+                let date_now = Moment();
                 let date_curr = Moment(dt.birthday);
 
                 PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.EndResponse(date_now.diff(date_curr, 'days').toString())[body.text[0] === 'y' ? "y" : "n"].text).then(res => {
