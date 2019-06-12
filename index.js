@@ -10,7 +10,7 @@ const Multer = require('multer');
 
 const UserModel = require('./src/database/model_user');
 const Verbal = require('./src/service/verbal');
-const PostBack = require('./src/service/postback');
+const PostBack = require('./src/service/postback').default;
 
 DotEnv.config({path: `${__dirname}/.env`});
 
@@ -40,18 +40,53 @@ app.post("/webhook", (req, res) => {
             console.log("DB >>> ", res);
             if(res.length > 0) {
                 let dt = res[0];
-                if(parseInt(dt.step) < 3) {
+                let step = parseInt(dt.step);
+                if(dt.is_not_first && step < 1) {
+                    UserModel.update({user_id: body.from.id}, {
+                        user_id: body.from.id,
+                        user_name: body.from.name,
+                        step: "1",
+                        is_not_first: dt.is_not_first ? true : false
+                    });
+                    PostBack(process.env.ACCESS_TOKEN, body.from.id, `Welcome Again ${body.from.name}`).then(res => {
+                        console.log("SENT! >>> ", body.from.id);
+                    }).catch(err => {console.log("SENDING FAIL!")});
+                }
+                if(step < 3) {
+                    UserModel.update({user_id: body.from.id}, {
+                        user_id: body.from.id,
+                        user_name: body.from.name,
+                        step: (step + 1).toString(),
+                        is_not_first: dt.is_not_first ? true : false
+                    });
                     PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.Question[dt.step].text).then(res => {
-                        console.log("SENT! >>> ", res);
+                        console.log("SENT! >>> ", body.from.id);
                     }).catch(err => {console.log("SENDING FAIL!")});
                 } else {
+
                     PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.EndResponse("XXX")[body.text.indexOf("y") > 1 ? "y" : "n"].text).then(res => {
-                        console.log("SENT! >>> ", res);
+                        console.log("SENT! >>> ", body.from.id);
+                        UserModel.update({user_id: body.from.id}, {
+                            user_id: body.from.id,
+                            user_name: body.from.name,
+                            step: "0",
+                            is_not_first: true
+                        });
                     }).catch(err => {console.log("SENDING FAIL!")});
                 }
             } else {
                 PostBack(process.env.ACCESS_TOKEN, body.from.id, "Hello There!").then(res => {
-                    console.log("SENT! >>> ", res);
+                    console.log("SENT! >>> ", body.from.id);
+                    UserModel.create({
+                        user_id: body.from.id,
+                        user_name: body.from.name,
+                        step: "0",
+                        is_not_first: false
+                    }).then(res => {
+                        PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.Question["0"].text).then(res => {
+                            console.log("SENT! >>> ", body.from.id);
+                        }).catch(err => {console.log("SENDING FAIL!")});
+                    }).catch(err => {console.log("INSERT DB FAIL!")});
                 }).catch(err => {console.log("SENDING FAIL!")});
             }
         }).catch(err => {
