@@ -7,8 +7,14 @@ const Request = require('request');
 
 DotEnv.config({path: `${__dirname}/.env`});
 
+
 const app = Express();
-var db = Mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true});
+Mongoose.connect(encodeURI(process.env.MONGO_URI)).then(res => {
+    console.log("[MongoDB] >>> Connected");
+}).catch(err => {
+    console.log("CONN ERR >>> ", process.env.MONGO_URI);
+    console.log("DETAILS ERR", err);
+});
 
 
 app.use(BodyParser.json());
