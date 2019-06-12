@@ -6,7 +6,7 @@ const UserSchema = Schema({
     user_id: String,
     user_name: String,
     step: String,
-    birthday: Date,
+    birthday: String,
     is_not_first: Boolean
 })
 

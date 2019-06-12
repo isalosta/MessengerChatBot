@@ -37,6 +37,7 @@ app.post("/webhook", (req, res) => {
 
     if(type === "message") {
         MessageModel.create({
+            message_id: body.channelData.message.mid,
             user_id: body.from.id,
             user_name: body.from.name,
             text: body.text,
@@ -56,7 +57,7 @@ app.post("/webhook", (req, res) => {
                             user_name: body.from.name,
                             step: "0",
                             is_not_first: false,
-                            birthday: Moment().format("DD/MM/YYYY")
+                            birthday: Moment().format("L")
                         }).then(res => {
                             PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.Question["0"].text).then(res => {
                                 console.log("SENT! >>> ", body.from.id);
@@ -86,9 +87,15 @@ function ProcessMessage(step, body, dt) {
                 is_not_first: dt.is_not_first ? true : false,
                 birthday: dt.birthday
             }).then(res_ => {
-                PostBack(process.env.ACCESS_TOKEN, body.from.id, `Welcome Again ${body.from.name}`).then(res => {
-                    console.log("SENT! >>> ", body.from.id);
-                }).catch(err_ => { console.log("SENDING FAIL!") });
+                if(dt.is_not_first) {
+                    PostBack(process.env.ACCESS_TOKEN, body.from.id, `Welcome Again ${body.from.name}`).then(res => {
+                        console.log("SENT! >>> ", body.from.id);
+                    }).catch(err_ => { console.log("SENDING FAIL!") });
+                } else {
+                    PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.Question["0"].text).then(res => {
+                        console.log("SENT! >>> ", body.from.id);
+                    }).catch(err_ => { console.log("SENDING FAIL!") });
+                }
             });
         break;
 
@@ -114,7 +121,7 @@ function ProcessMessage(step, body, dt) {
                 user_name: body.from.name,
                 step: `${step}`,
                 is_not_first: dt.is_not_first ? true : false,
-                birthday: Moment(body.text, "DD/MM/YYYY")
+                birthday: Moment(body.text, "L")
             }).then(res_ => {
                 PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.Question[dt.step].text).then(res => {
                     console.log("SENT! >>> ", body.from.id);
@@ -131,7 +138,7 @@ function ProcessMessage(step, body, dt) {
                 birthday: dt.birthday
             }).then(res_ => {
                 let result = "";
-                let date_now = Moment().format("DD/MM/YYYY");
+                let date_now = Moment().format("L");
                 let date_array = dt.birthday.split("/");
                 let date_now_array = date_now.split("/");
 
@@ -180,12 +187,28 @@ app.get("/webhook", (req, res) => {
     }
 })
 
+app.get("/messages/", async(req, res, next) => {
+    MessageModel.find({}).then(response => {
+        res.status(200).send(response);
+    }).catch(err => {
+        res.status(500);
+    })
+});
+
 app.get("/messages/:id", async(req, res, next) => {
-    console.log(req, res);
+    MessageModel.find({message_id: id}).then(response => {
+        res.status(200).send(response);
+    }).catch(err => {
+        res.status(500);
+    })
 });
 
 app.get("/messages/delete/:id", async(req, res, next) => {
-    console.log(req, res);
+    MessageModel.remove({message_id: id}).then(response => {
+        res.status(200).send({status: "OK"});
+    }).catch(err => {
+        res.status(500);
+    })
 });
 
 app.get("/privacy_policy", (req, res) => {

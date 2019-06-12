@@ -3,6 +3,7 @@ const Schema = Mongoose.Schema;
 
 
 const MessageSchema = Schema({
+    message_id: String,
     user_id: String,
     user_name: String,
     text: String,
