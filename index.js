@@ -152,7 +152,7 @@ function ProcessMessage(step, body, dt) {
                 date_now = Moment();
                 let date_curr = Moment(result);
 
-                PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.EndResponse(date_now.diff(date_curr, 'days').toString())[body.text[0] === 'y' ? "y" : "n"].text).then(res => {
+                PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.EndResponse((date_curr.diff(date_now, 'days')).toString())[body.text[0] === 'y' ? "y" : "n"].text).then(res => {
                     console.log("SENT! >>> ", body.from.id);
                 }).catch(err => { console.log("SENDING FAIL!") });
             });
