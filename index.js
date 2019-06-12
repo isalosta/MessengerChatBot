@@ -22,6 +22,7 @@ Mongoose.connect(encodeURI(process.env.MONGO_URI)).then(res => {
 app.use(BodyParser.json());
 
 app.post("/webhook", (req, res) => {
+    console.log(">>>> EVENT RECIEVED");
     res.status(200).send("EVENT RECIEVED");
 
     let body = req.body;
