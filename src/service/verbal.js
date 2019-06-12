@@ -4,7 +4,7 @@ let Question = {
         "text": "What is Your Name ?"
     },
     "1" : {
-        "text": "Please tell me when is you were born (DD/MM/YYYY) ?"
+        "text": "Please tell me when is you were born (MM/DD/YYYY) ?"
     }, 
     "2" : {
         "text": "Do you want to know About your day of your birthday ?"

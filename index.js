@@ -142,7 +142,7 @@ function ProcessMessage(step, body, dt) {
                 let date_array = dt.birthday.split("/");
                 let date_now_array = date_now.split("/");
 
-                if(date_now_array[1] > date_array[1]) {
+                if(date_now_array[0] > date_array[0]) {
                     result = `${date_array[0]}/${date_array[1]}/${parseInt(date_now_array[2])+1}`;
                 } else {
                     result = `${date_array[0]}/${date_array[1]}/${parseInt(date_now_array[2])}`;
