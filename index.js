@@ -21,10 +21,12 @@ app.use(BodyParser.json());
 
 app.post("/webhook", (req, res) => {
     console.log(req);
+    res.send({status: "OK"});
 });
 
 app.get("/webhook", (req, res) => {
     console.log(req, res);
+    res.send({status: "OK"});
 })
 
 app.get("/messages/:id", async(req, res, next) => {
@@ -35,4 +37,4 @@ app.get("/messages/delete/:id", async(req, res, next) => {
     console.log(req, res);
 })
 
-app.listen(process.env.port || 8080, () => {console.log(`Server RUN on ${process.env.port || 8080}`)});
+app.listen(process.env.port || 8080, () => {console.log(`Server RUN on ${process.env.port}`)});
