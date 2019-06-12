@@ -6,6 +6,9 @@ const BodyParser = require('body-parser');
 const Mongoose = require('mongoose');
 const DotEnv = require('dotenv');
 const Request = require('request');
+const Multer = require('multer');
+
+const UserModel = require('./src/database/model_user');
 
 DotEnv.config({path: `${__dirname}/.env`});
 
@@ -26,24 +29,16 @@ app.post("/webhook", (req, res) => {
     res.status(200).send("EVENT RECIEVED");
 
     let body = req.body;
-    let entry = body.entry;
+    let type = body.type;
 
     console.log(body);
-    
-    if(entry) {
-        let len = entry.length;
-        if(body.object === 'page') {
-            if(len <= 0) {
-                return;
-            }
-        }
 
-        for(let i = 0; i < len; i++) {
-            console.log(body.entry[i]);
-        }
-
-    } else {
-        return;
+    if(type === "message") {
+        UserModel.find({user_id: body.from.id}).then(res => {
+            console.log("DB >>> ", res);
+        }).catch(err => {
+            console.log(err);
+        })
     }
 });
 

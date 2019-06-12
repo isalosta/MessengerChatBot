@@ -1,5 +1,5 @@
 
-export let Question = {
+let Question = {
     "0" : {
         "text": "What is Your Name ?"
     },
@@ -8,7 +8,7 @@ export let Question = {
     }
 }
 
-export let EndResponse = (date = "") => {
+let EndResponse = (date = "") => {
     return {
         "n": {
             "text": "Goodbye! :)"
@@ -17,4 +17,9 @@ export let EndResponse = (date = "") => {
             "text": `There are ${date} days left until your next birthday`
         }
     }
+}
+
+exports = {
+    Question,
+    EndResponse
 }
