@@ -10,7 +10,7 @@ const Multer = require('multer');
 
 const UserModel = require('./src/database/model_user');
 const Verbal = require('./src/service/verbal');
-const PostBack = require('./src/service/postback').default;
+const PostBack = require('./src/service/postback');
 
 DotEnv.config({path: `${__dirname}/.env`});
 
