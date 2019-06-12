@@ -116,6 +116,7 @@ function ProcessMessage(step, body, dt) {
         break;
 
         case 2:
+            console.log(Moment(body.text, "L"));
             step = step + 1;
             UserModel.update({ user_id: body.from.id }, {
                 user_id: body.from.id,
