@@ -88,7 +88,7 @@ function ProcessMessage(step, body, dt) {
                 birthday: dt.birthday
             }).then(res_ => {
                 if(dt.is_not_first) {
-                    PostBack(process.env.ACCESS_TOKEN, body.from.id, `Welcome Again ${body.from.name}`).then(res => {
+                    PostBack(process.env.ACCESS_TOKEN, body.from.id, `Welcome Again ${body.from.name} \n Press Any To Continue`).then(res => {
                         console.log("SENT! >>> ", body.from.id);
                     }).catch(err_ => { console.log("SENDING FAIL!") });
                 } else {
@@ -108,7 +108,7 @@ function ProcessMessage(step, body, dt) {
                 is_not_first: dt.is_not_first ? true : false,
                 birthday: dt.birthday
             }).then(res_ => {
-                PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.Question[dt.step].text).then(res => {
+                PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.Question[`${step}`].text).then(res => {
                     console.log("SENT! >>> ", body.from.id);
                 }).catch(err_ => { console.log("SENDING FAIL!") });
             });
@@ -123,7 +123,7 @@ function ProcessMessage(step, body, dt) {
                 is_not_first: dt.is_not_first ? true : false,
                 birthday: Moment(body.text, "L")
             }).then(res_ => {
-                PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.Question[dt.step].text).then(res => {
+                PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.Question[`${step}`].text).then(res => {
                     console.log("SENT! >>> ", body.from.id);
                 }).catch(err_ => { console.log("SENDING FAIL!") });
             });
