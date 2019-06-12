@@ -5,7 +5,7 @@ const Schema = Mongoose.Schema;
 const UserSchema = Schema({
     user_id: String,
     user_name: String,
-    step: Int32Array,
+    step: String,
     is_not_first: Boolean
 })
 
