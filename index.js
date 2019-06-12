@@ -28,6 +28,8 @@ app.post("/webhook", (req, res) => {
     let body = req.body;
     let entry = body.entry;
 
+    console.log(body);
+    
     if(entry) {
         let len = entry.length;
         if(body.object === 'page') {
