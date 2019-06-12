@@ -116,14 +116,13 @@ function ProcessMessage(step, body, dt) {
         break;
 
         case 2:
-            console.log(Moment(body.text).format("L"));
             step = step + 1;
             UserModel.update({ user_id: body.from.id }, {
                 user_id: body.from.id,
                 user_name: body.from.name,
                 step: `${step}`,
                 is_not_first: dt.is_not_first ? true : false,
-                birthday: Moment(body.text, "L")
+                birthday: Moment(body.text).format("L")
             }).then(res_ => {
                 PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.Question[dt.step].text).then(res => {
                     console.log("SENT! >>> ", body.from.id);
