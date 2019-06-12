@@ -1,4 +1,4 @@
-var axios = require('axios');
+var Axios = require('axios');
 
 let URI = "https://graph.facebook.com/v3.3/me/messages?"
 
@@ -12,10 +12,13 @@ let PostBack = (token, recipient, msg) => {
         }
     }
 
+    console.log(URI, post);
+
     return new Promise((resolve, reject) => {
-        axios.default.post(URI + `?access_token=${token}`, post, {headers: {"content-type": "application/json"}}).then(res => {
+        Axios.default.post(URI + `access_token=${token}`, post, {headers: {"Content-Type": "application/json"}}).then(res => {
             resolve(res);
         }).catch(err => {
+            console.log(err);
             reject(err);
         })
     });

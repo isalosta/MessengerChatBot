@@ -45,7 +45,7 @@ app.post("/webhook", (req, res) => {
                         console.log("SENT! >>> ", res);
                     }).catch(err => {console.log("SENDING FAIL!")});
                 } else {
-                    PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.EndResponse("XXX")[body.message.text.indexOf("y") > 1 ? "y" : "n"].text).then(res => {
+                    PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.EndResponse("XXX")[body.text.indexOf("y") > 1 ? "y" : "n"].text).then(res => {
                         console.log("SENT! >>> ", res);
                     }).catch(err => {console.log("SENDING FAIL!")});
                 }
