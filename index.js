@@ -6,7 +6,7 @@ const BodyParser = require('body-parser');
 const Mongoose = require('mongoose');
 const DotEnv = require('dotenv');
 const Request = require('request');
-const Multer = require('multer');
+const Moment = require('moment');
 
 const UserModel = require('./src/database/model_user');
 const Verbal = require('./src/service/verbal');
@@ -41,41 +41,7 @@ app.post("/webhook", (req, res) => {
             if(res.length > 0) {
                 let dt = res[0];
                 let step = parseInt(dt.step);
-                if(dt.is_not_first && step === 0) {
-                    UserModel.update({user_id: body.from.id}, {
-                        user_id: body.from.id,
-                        user_name: body.from.name,
-                        step: "1",
-                        is_not_first: dt.is_not_first ? true : false
-                    }).then(res_ => {
-                        PostBack(process.env.ACCESS_TOKEN, body.from.id, `Welcome Again ${body.from.name}`).then(res => {
-                            console.log("SENT! >>> ", body.from.id);
-                        }).catch(err_ => {console.log("SENDING FAIL!")});
-                    });
-                }
-                if(step < 3) {
-                    step = step + 1;
-                    UserModel.update({user_id: body.from.id}, {
-                        user_id: body.from.id,
-                        user_name: body.from.name,
-                        step: `${step}`,
-                        is_not_first: dt.is_not_first ? true : false
-                    }).then(res_ => {
-                        PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.Question[dt.step].text).then(res => {
-                            console.log("SENT! >>> ", body.from.id);
-                        }).catch(err_ => {console.log("SENDING FAIL!")});
-                    });
-                } else {
-                    PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.EndResponse("XXX")[body.text.indexOf("y") > 1 ? "y" : "n"].text).then(res => {
-                        console.log("SENT! >>> ", body.from.id);
-                        UserModel.update({user_id: body.from.id}, {
-                            user_id: body.from.id,
-                            user_name: body.from.name,
-                            step: "0",
-                            is_not_first: true
-                        });
-                    }).catch(err => {console.log("SENDING FAIL!")});
-                }
+                ProcessMessage(step, body, dt);
             } else {
                 PostBack(process.env.ACCESS_TOKEN, body.from.id, "Hello There!").then(res => {
                     console.log("SENT! >>> ", body.from.id);
@@ -83,7 +49,8 @@ app.post("/webhook", (req, res) => {
                         user_id: body.from.id,
                         user_name: body.from.name,
                         step: "0",
-                        is_not_first: false
+                        is_not_first: false,
+                        birthday: new Date.now()
                     }).then(res => {
                         PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.Question["0"].text).then(res => {
                             console.log("SENT! >>> ", body.from.id);
@@ -96,6 +63,77 @@ app.post("/webhook", (req, res) => {
         })
     }
 });
+
+function ProcessMessage(step, body, dt) {
+    switch(step) {
+        case 0:
+            UserModel.update({ user_id: body.from.id }, {
+                user_id: body.from.id,
+                user_name: body.from.name,
+                step: "1",
+                is_not_first: dt.is_not_first ? true : false,
+                birthday: dt.birthday
+            }).then(res_ => {
+                PostBack(process.env.ACCESS_TOKEN, body.from.id, `Welcome Again ${body.from.name}`).then(res => {
+                    console.log("SENT! >>> ", body.from.id);
+                }).catch(err_ => { console.log("SENDING FAIL!") });
+            });
+        break;
+
+        case 1:
+            step = step + 1;
+            UserModel.update({ user_id: body.from.id }, {
+                user_id: body.from.id,
+                user_name: body.from.name,
+                step: `${step}`,
+                is_not_first: dt.is_not_first ? true : false,
+                birthday: dt.birthday
+            }).then(res_ => {
+                PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.Question[dt.step].text).then(res => {
+                    console.log("SENT! >>> ", body.from.id);
+                }).catch(err_ => { console.log("SENDING FAIL!") });
+            });
+        break;
+
+        case 2:
+            step = step + 1;
+            UserModel.update({ user_id: body.from.id }, {
+                user_id: body.from.id,
+                user_name: body.from.name,
+                step: `${step}`,
+                is_not_first: dt.is_not_first ? true : false,
+                birthday: Moment(body.text, "DD/MM/YYYY")
+            }).then(res_ => {
+                PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.Question[dt.step].text).then(res => {
+                    console.log("SENT! >>> ", body.from.id);
+                }).catch(err_ => { console.log("SENDING FAIL!") });
+            });
+        break;
+
+        case 3:
+            UserModel.update({ user_id: body.from.id }, {
+                user_id: body.from.id,
+                user_name: body.from.name,
+                step: "0",
+                is_not_first: true,
+                birthday: dt.birthday
+            }).then(res_ => {
+                let date_now = Moment(new Date.now());
+                let date_curr = Moment(dt.birthday);
+
+                PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.EndResponse(date_now.diff(date_curr, 'days').toString())[body.text[0] === 'y' ? "y" : "n"].text).then(res => {
+                    console.log("SENT! >>> ", body.from.id);
+                }).catch(err => { console.log("SENDING FAIL!") });
+            });
+        break;
+
+        default:
+            PostBack(process.env.ACCESS_TOKEN, body.from.id, `We're Apologize ${body.from.name}, Something Went Broken :(`).then(res => {
+                console.log("SENT! >>> ", body.from.id);
+            }).catch(err_ => { console.log("SENDING FAIL!") });
+        break;
+    }
+}
 
 app.get("/webhook", (req, res) => {
     let verify_token = process.env.VERIFICATION_TOKEN;
