@@ -26,14 +26,23 @@ app.post("/webhook", (req, res) => {
     res.status(200).send("EVENT RECIEVED");
 
     let body = req.body;
+    let entry = body.entry;
 
-    if(body.object === 'page') {
-        if(body.entry.length <= 0) {
-            return;
+    if(entry) {
+        let len = entry.length;
+        if(body.object === 'page') {
+            if(len <= 0) {
+                return;
+            }
         }
+
+        for(let i = 0; i < len; i++) {
+            console.log(body.entry[i]);
+        }
+
+    } else {
+        return;
     }
-
-
 });
 
 app.get("/webhook", (req, res) => {
