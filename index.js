@@ -59,7 +59,7 @@ app.post("/webhook", (req, res) => {
                             is_not_first: false,
                             birthday: Moment().format("L")
                         }).then(res => {
-                            PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.Question["0"].text).then(res => {
+                            PostBack(process.env.ACCESS_TOKEN, body.from.id, "Press Any To Get Started").then(res => {
                                 console.log("SENT! >>> ", body.from.id);
                             }).catch(err => {console.log("SENDING FAIL!")});
                         }).catch(err => {console.log("INSERT DB FAIL!")});
@@ -108,7 +108,7 @@ function ProcessMessage(step, body, dt) {
                 is_not_first: dt.is_not_first ? true : false,
                 birthday: dt.birthday
             }).then(res_ => {
-                PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.Question[`${step}`].text).then(res => {
+                PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.Question[dt.step].text).then(res => {
                     console.log("SENT! >>> ", body.from.id);
                 }).catch(err_ => { console.log("SENDING FAIL!") });
             });
@@ -123,7 +123,7 @@ function ProcessMessage(step, body, dt) {
                 is_not_first: dt.is_not_first ? true : false,
                 birthday: Moment(body.text, "L")
             }).then(res_ => {
-                PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.Question[`${step}`].text).then(res => {
+                PostBack(process.env.ACCESS_TOKEN, body.from.id, Verbal.Question[dt.step].text).then(res => {
                     console.log("SENT! >>> ", body.from.id);
                 }).catch(err_ => { console.log("SENDING FAIL!") });
             });
