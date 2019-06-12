@@ -196,6 +196,7 @@ app.get("/messages/", async(req, res, next) => {
 });
 
 app.get("/messages/:id", async(req, res, next) => {
+    let { id } = req.params;
     MessageModel.find({message_id: id}).then(response => {
         res.status(200).send(response);
     }).catch(err => {
@@ -204,6 +205,7 @@ app.get("/messages/:id", async(req, res, next) => {
 });
 
 app.get("/messages/delete/:id", async(req, res, next) => {
+    let { id } = req.params;
     MessageModel.remove({message_id: id}).then(response => {
         res.status(200).send({status: "OK"});
     }).catch(err => {
