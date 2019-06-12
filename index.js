@@ -37,4 +37,4 @@ app.get("/messages/delete/:id", async(req, res, next) => {
     console.log(req, res);
 })
 
-app.listen(process.env.port || 8080, () => {console.log(`Server RUN on ${process.env.port}`)});
+app.listen(process.env.PORT || 8080, () => {console.log(`Server RUN on ${process.env.PORT}`)});
