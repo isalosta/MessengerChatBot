@@ -66,7 +66,7 @@ app.get("/messages/delete/:id", async(req, res, next) => {
 });
 
 app.get("/privacy_policy", (req, res) => {
-    res.sendFile('views/privacy_policy.html', {root: __dirname })
+    res.sendFile('src/views/privacy_policy.html', {root: __dirname })
 })
 
 app.listen(process.env.PORT || 8080, () => {console.log(`Server RUN on ${process.env.PORT}`)});
